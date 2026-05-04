@@ -1,21 +1,36 @@
-name:NodeJS application deploy
+name: NodeJS application deploy
+
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
 jobs:
-  build:        
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out the repository
-      - users: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
+
       - name: Deploy via SSH
-      - uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@master
+
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: Moptra_IT
+          username: ec2-user
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /home/ec2-user/simple-nodejs-project
+
             git pull origin main
+
             docker build -t my-nodejs-app .
-            docker run -d -p 8000:8000 --name my-nodejs-app-container my-nodejs-app  
+
+            docker stop my-nodejs-app-container || true
+            docker rm my-nodejs-app-container || true
+
+            docker run -d \
+              -p 8000:8000 \
+              --name my-nodejs-app-container \
+              my-nodejs-app

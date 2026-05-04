@@ -16,7 +16,7 @@ app.get('/v3', (req, res) => {
 
 app.get('/', (req, res) => {
   console.log("Calling /")
-  res.json({ message: 'Welcome to Nodejs application deployment' });
+  res.json({ message: 'Welcome to Nodejs application deployment V1' });
 });
 
 
