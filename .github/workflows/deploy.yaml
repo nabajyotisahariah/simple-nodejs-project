@@ -1,0 +1,21 @@
+name:NodeJS application deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:        
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+      - users: actions/checkout@v4
+      - name: Deploy via SSH
+      - uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: Moptra_IT
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/ec2-user/simple-nodejs-project
+            git pull origin main
+            docker build -t my-nodejs-app .
+            docker run -d -p 8000:8000 --name my-nodejs-app-container my-nodejs-app  
